@@ -17,7 +17,7 @@ class Device(ABC):
     @staticmethod
     def _init_log(logger_: logging.Logger) -> logging.Logger:
         if logger_:
-            return logger_w
+            return logger_
         else:
             logger = logging.getLogger(__name__)
             logger.setLevel(logging.DEBUG)
@@ -123,15 +123,17 @@ class Bridge(Device):
         self._msg_status = self.get_status()
         self._key_accepted = self.validate_key()
 
-    @staticmethod
-    def get_callback_address(callback_address: str = "") -> str:
+    def get_callback_address(self, callback_address: str = "") -> str:
         if callback_address == '':
             import socket as so
             s = so.socket(so.AF_INET, so.SOCK_DGRAM)
             s.connect(("208.67.222.222", 80))
-            return s.getsockname()[0]
+            address_ = s.getsockname()[0]
         else:
-            return callback_address
+            address_ = callback_address
+
+        self._log.info(f"Set callback address to: {address_}")
+        return address_
 
     def get_connector(self) -> any:
         return self._connector
