@@ -311,7 +311,7 @@ class RadioMotor(Device):
         msg = self._bridge.send_payload(payload)
         return msg[0]
 
-    def _callback_after_stop(self, sock: any = None, timeout: int = None) -> dict:
+    def _callback_after_stop(self, sock: any = None, timeout: int = 60) -> dict:
         from socket import socket, AF_INET, SOCK_DGRAM, inet_aton, IPPROTO_IP, IP_ADD_MEMBERSHIP
 
         if sock is None:
