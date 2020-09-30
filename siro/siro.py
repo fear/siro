@@ -89,12 +89,12 @@ class Device(ABC):
 
 class Bridge(Device):
     # noinspection PyTypeChecker,PyMissingConstructor
-    def __init__(self, connector, logger: logging.Logger = None) -> None:
+    def __init__(self, connector, logger: logging.Logger = None, host_address_: str = '') -> None:
         super().__init__('', const.WIFI_BRIDGE, logger)
         self._connector = connector
         self._key = ''
         self._access_token = ''
-        self._host_address = ''
+        self._host_address = host_address_
         self._callback_address = ''
         self._protocol_version = ''
         self._firmware = ''
@@ -402,8 +402,8 @@ class Connector:
         pass
 
     @staticmethod
-    def bridge_factory(key: str) -> Bridge:
-        new_bridge = Bridge(Connector)
+    def bridge_factory(key: str, log: logging.Logger = None, host_address: str = '') -> Bridge:
+        new_bridge = Bridge(Connector, log, host_address)
         new_bridge.init(key)
         return new_bridge
 
