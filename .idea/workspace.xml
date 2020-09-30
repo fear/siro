@@ -26,7 +26,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../siro" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JupyterTrust" id="0132028e-85a1-4b99-91e7-6db1070cb046" />
   <component name="ProjectId" id="1hzvFepcUl5Tw9SmXV3LEA2rG3G" />
@@ -53,10 +53,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Workspace\siro" />
       <recent name="D:\Workspace\siro_connector\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.siro_dev">
+  <component name="RunManager" selected="Python.demo">
     <configuration default="true" type="DjangoTestsConfigurationType">
       <module name="siro" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -286,6 +287,7 @@
     </configuration>
     <list>
       <item itemvalue="Python.siro_dev" />
+      <item itemvalue="Python.demo" />
       <item itemvalue="Python.helper" />
     </list>
     <recent_temporary>
@@ -310,6 +312,7 @@
       <workItem from="1601194898794" duration="1881000" />
       <workItem from="1601273980738" duration="22358000" />
       <workItem from="1601298921365" duration="706000" />
+      <workItem from="1601458403099" duration="315000" />
     </task>
     <task id="LOCAL-00001" summary="replace pycrypto with pacryptodome">
       <created>1601035169440</created>
@@ -501,7 +504,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/siro_connector$demo.coverage" NAME="demo Coverage Results" MODIFIED="1601287609603" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
-    <SUITE FILE_PATH="coverage/siro$demo.coverage" NAME="demo Coverage Results" MODIFIED="1601293935919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../siro" />
+    <SUITE FILE_PATH="coverage/siro$demo.coverage" NAME="demo Coverage Results" MODIFIED="1601293935919" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/siro_connector$udpmulticast__1_.coverage" NAME="udpmulticast (1) Coverage Results" MODIFIED="1601050215481" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro$siro_dev.coverage" NAME="demo Coverage Results" MODIFIED="1601299399060" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/siro_connector$siro_connector.coverage" NAME="siro_connector Coverage Results" MODIFIED="1601027122932" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
