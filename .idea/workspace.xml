@@ -21,7 +21,6 @@
   <component name="ChangeListManager">
     <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="some tuning">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/siro/siro.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/siro.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/siro/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,7 +60,7 @@
       <recent name="D:\Workspace\siro_connector\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.demo">
+  <component name="RunManager" selected="Python.test">
     <configuration default="true" type="DjangoTestsConfigurationType">
       <module name="siro" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -296,8 +295,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.demo" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.demo" />
       </list>
     </recent_temporary>
   </component>
