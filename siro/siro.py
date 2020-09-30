@@ -416,8 +416,11 @@ class Connector:
         else:
             raise NotImplemented('By now there are just the 433Mhz Radio Motors implemented.')
 
-    def start_cli(self, key) -> None:
-        bridge = self.bridge_factory(key)
+    def start_cli(self, key: str, host_address: str = '') -> None:
+        bridge = self.bridge_factory(
+            key=key,
+            host_address=host_address,
+        )
         devices = bridge.get_devices()
 
         keep_running = True

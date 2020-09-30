@@ -8,8 +8,8 @@ def aprint(some_text) -> None:
     print(some_text)
 
 
-def main1(key) -> None:
-    Connector().start_cli(key)
+def main1(key, addr) -> None:
+    Connector().start_cli(key, addr)
 
 
 def main2(key) -> None:
@@ -31,4 +31,4 @@ def main2(key) -> None:
 
 if __name__ == '__main__':
     config_ = json.load(open('config.json'))
-    main1(config_['key'])
+    main1(config_['key'], config_['bridge'])
