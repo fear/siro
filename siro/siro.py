@@ -311,7 +311,7 @@ class RadioMotor(Device):
         msg = self._bridge.send_payload(payload)
         return msg[0]
 
-    def _callback_after_stop(self, sock: any = None, timeout: int = 60) -> dict:
+    def _callback_after_stop(self, sock=None, timeout: int = 60) -> dict:
         from socket import socket, AF_INET, SOCK_DGRAM, inet_aton, IPPROTO_IP, IP_ADD_MEMBERSHIP
 
         if sock is None:
@@ -319,13 +319,13 @@ class RadioMotor(Device):
             s.bind(('', const.CALLBACK_PORT))
             mreq = inet_aton(const.MULTICAST_GRP) + inet_aton(self._bridge.get_callback_address())
             s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
-
         else:
             s = sock
         # noinspection PyBroadException
         try:
             msg = s.recv(1024)
-        except Exception:
+        except Exception as e:
+            self._log.warning(e)
             return {'msgType': 'timeout'}
         data = json.loads(msg.decode('utf-8'))
 
