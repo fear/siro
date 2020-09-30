@@ -315,20 +315,16 @@ class RadioMotor(Device):
         from socket import socket, AF_INET, SOCK_DGRAM, inet_aton, IPPROTO_IP, IP_ADD_MEMBERSHIP
 
         if sock is None:
-            multicast_port = const.CALLBACK_PORT
-            multicast_group = const.MULTICAST_GRP
-            interface_ip = self._bridge.get_callback_address()
-            mreq = inet_aton(multicast_group) + inet_aton(interface_ip)
-
             s = socket(AF_INET, SOCK_DGRAM)
-            s.bind((interface_ip, multicast_port))
+            s.bind(('', const.CALLBACK_PORT))
+            mreq = inet_aton(const.MULTICAST_GRP) + inet_aton(self._bridge.get_callback_address())
             s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
-            s.settimeout(timeout)
+
         else:
             s = sock
         # noinspection PyBroadException
         try:
-            msg = s.recv(1500)
+            msg = s.recv(1024)
         except Exception:
             return {'msgType': 'timeout'}
         data = json.loads(msg.decode('utf-8'))
