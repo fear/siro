@@ -224,13 +224,14 @@ class Bridge(Device):
             s.settimeout(const.UDP_TIMEOUT)
 
             s.sendto(payload.encode(), (remote_ip, const.SEND_PORT))
-            self.get_logger().debug(f'{self._mac}: Send: {payload}.')
+            self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{const.SEND_PORT}: {payload}.')
 
             data, address = s.recvfrom(1024)
             message = json.loads(data.decode('utf-8'))
+            port = address[1]
             address = address[0]
             s.close()
-            self.get_logger().debug(f'{self._mac}: Receive from {address}: {message}.')
+            self.get_logger().debug(f'{self._mac}: Receive from {address}:{port}: {message}.')
             return message, address
         except Exception:
             raise
