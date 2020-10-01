@@ -5,11 +5,11 @@
     },
     {
         "mac": "98f4ab8932a40006",
-        "name": "Schlafzimmer"
+        "name": "SZ"
     },
     {
         "mac": "98f4ab8932a40004",
-        "name": "Areitszimmer"
+        "name": "AZ - Mitte"
     },
     {
         "mac": "98f4ab8932a40001",
@@ -18,5 +18,13 @@
     {
         "mac": "98f4ab8932a40003",
         "name": "Test 2"
+    },
+    {
+        "mac": "98f4ab8932a40007",
+        "name": "AZ - Rechts"
+    },
+    {
+        "mac": "98f4ab8932a40008",
+        "name": "AZ - Links"
     }
 ]

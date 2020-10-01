@@ -1,8 +1,8 @@
-from abc import ABC
 import json
 import logging
 
-from .const import *
+from abc import ABC
+from const import *
 
 
 class Device(ABC):
@@ -119,6 +119,7 @@ class Bridge(Device):
         self._key_accepted = ''
 
         self._msg_device_list = {}
+        self._msg_callback = {}
 
     def init(self, key: str, callback_address: str = '') -> None:
         self._key = key
@@ -131,9 +132,9 @@ class Bridge(Device):
         self._access_token = self._get_access_token()
         self._number_of_devices = len(self._msg_device_list['data'])-1
         self._devices = self.get_devices()
-        self._key_accepted = self.validate_key()
 
         self._set_last_msg_status(self.get_status(force_update=True))
+        self._key_accepted = self.validate_key()
 
     def _ident_callback_address(self, callback_address: str = "") -> str:
         if callback_address == '':
@@ -159,6 +160,9 @@ class Bridge(Device):
             'msgID': self.get_timestamp()}
         )
         return self.send_payload(payload)
+
+    def _set_last_msg_callback(self, msg: dict) -> None:
+        self._msg_callback = msg
 
     def _get_access_token(self) -> str:
         from Cryptodome.Cipher import AES
@@ -234,16 +238,24 @@ class Bridge(Device):
         print(f"Message Device list: {self._msg_device_list}")
 
     def send_payload(self, payload: str) -> (dict, str):
-        import socket
+        from socket import (
+            AF_INET,
+            IPPROTO_UDP,
+            # IP_ADD_MEMBERSHIP,
+            IP_MULTICAST_TTL,
+            IPPROTO_IP,
+            SOCK_DGRAM,
+            # inet_aton,
+            socket,
+        )
 
         if self._bridge_address == '':
             remote_ip = MULTICAST_GRP
         else:
             remote_ip = self._bridge_address
-
         try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-            s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 32)
+            s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+            s.setsockopt(IPPROTO_IP, IP_MULTICAST_TTL, 32)
             s.bind((self._callback_address, CALLBACK_PORT))
             s.settimeout(UDP_TIMEOUT)
 
@@ -259,6 +271,39 @@ class Bridge(Device):
             return message, address
         except Exception:
             raise
+
+    def get_callback_from_bridge(self, sock=None, timeout: int = 60) -> dict:
+        from socket import (
+            AF_INET,
+            IP_ADD_MEMBERSHIP,
+            IPPROTO_IP,
+            SOCK_DGRAM,
+            inet_aton,
+            socket,
+        )
+
+        if sock is None:
+            s = socket(AF_INET, SOCK_DGRAM)
+            s.bind(('', CALLBACK_PORT))
+            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
+            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
+        else:
+            s = sock
+        # noinspection PyBroadException
+        try:
+            msg = s.recv(1024)
+        except Exception as e:
+            self._log.warning(e)
+            return {'msgType': 'timeout'}
+        data = json.loads(msg.decode('utf-8'))
+        self._set_last_msg_callback(data)
+
+        if data['msgType'] == MSG_TYPES['REPORT']:
+            s.close()
+            self._set_last_msg_callback(data)
+            return data
+        else:
+            self.get_callback_from_bridge(sock=s, timeout=timeout)
 
     # noinspection PyTypeChecker
     def load_devices(self) -> None:
@@ -355,42 +400,15 @@ class RadioMotor(Device):
         self.update_status()
         return msg[0]
 
-    def _callback_after_stop(self, sock=None, timeout: int = 60) -> dict:
-        from socket import (
-            AF_INET,
-            IP_ADD_MEMBERSHIP,
-            IPPROTO_IP,
-            SOCK_DGRAM,
-            inet_aton,
-            socket,
-        )
-
-        if sock is None:
-            s = socket(AF_INET, SOCK_DGRAM)
-            s.bind(('', CALLBACK_PORT))
-            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._bridge.get_callback_address())
-            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
-        else:
-            s = sock
-        # noinspection PyBroadException
-        try:
-            msg = s.recv(1024)
-        except Exception as e:
-            self._log.warning(e)
-            return {'msgType': 'timeout'}
-        data = json.loads(msg.decode('utf-8'))
-
-        if data['msgType'] == MSG_TYPES['REPORT']:
-            s.close()
-            self._set_last_msg_status(data)
-            self.update_status()
-            return data
-        else:
-            self._callback_after_stop(sock=s, timeout=timeout)
+    def _callback_after_stop(self, timeout: int = 60) -> dict:
+        msg = self._bridge.get_callback_from_bridge(timeout=timeout)
+        self._set_last_msg_status(msg)
+        self.update_status()
+        return msg
 
     def update_status(self, force_update: bool = False) -> None:
         if force_update:
-            status = self.get_status()
+            status = self.get_status(force_update=True)
         else:
             status = self._msg_status
         self._type = status['data']['type']
@@ -425,10 +443,8 @@ class RadioMotor(Device):
         return msg
 
     def move_stop(self) -> dict:
-        timeout = 1
-
         msg_1 = self._set_device(STOP)
-        msg_2 = self._callback_after_stop(timeout=timeout)
+        msg_2 = self._callback_after_stop(timeout=1)
 
         # noinspection PyBroadException
         try:
@@ -513,7 +529,7 @@ class Connector:
             key=key,
             bridge_address=bridge_address,
         )
-        devices = bridge.get_devices()
+        devices: list = bridge.get_devices()
 
         keep_running = True
         while keep_running:
@@ -525,6 +541,7 @@ class Connector:
                        f"type: {DEVICE_TYPES[device.get_devicetype()]})"
                 print(f"  {index}: {name}")
             device_selection = int(input(f"Which device do you want to control (1-{len(devices)}): ")) - 1
+            selected_device: RadioMotor = devices[device_selection]
             print("List of possible operations: \n"
                   "  1: up\n"
                   "  2: down\n"
@@ -535,18 +552,18 @@ class Connector:
             operation = int(input("What do you want to do? (0-5): "))
 
             if operation == 1:
-                print(devices[device_selection].up())
+                print(selected_device.move_up())
             elif operation == 2:
-                print(devices[device_selection].down())
+                print(selected_device.move_down())
             elif operation == 3:
                 value = int(input("Which position should the roller blind move to? (0-100): "))
-                print(devices[device_selection].position(value))
+                print(selected_device.move_to_position(value))
             elif operation == 4:
-                print(devices[device_selection].get_status())
+                print(selected_device.get_status())
             elif operation == 9:
                 name = input("Please indicate the name: ")
-                devices[device_selection].set_name(name)
-                print(f"The name was changed to {devices[device_selection].get_name()}.")
+                selected_device.set_name(name)
+                print(f"The name was changed to {selected_device.get_name()}.")
             else:
                 keep_running = False
 

@@ -1,14 +1,13 @@
 import json
-import const
 
-from .siro import RadioMotor, Bridge, Connector
+from siro import RadioMotor, Bridge, Connector
 
 
 def aprint(some_text) -> None:
     print(some_text)
 
 
-def main1(key, addr) -> None:
+def main1(key, addr="") -> None:
     Connector().start_cli(key, addr)
 
 
@@ -29,4 +28,4 @@ def main2(key) -> None:
 
 if __name__ == '__main__':
     config_ = json.load(open('config.json'))
-    main1(config_['key'], config_['bridge'])
+    main1(config_['key'])
