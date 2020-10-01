@@ -618,16 +618,23 @@ class Connector:
                        f"(mac: {device.get_mac()}, " \
                        f"type: {DEVICE_TYPES[device.get_devicetype()]})"
                 print(f"  {index}: {name}")
+            print(f"--------------------------------------------------------------------\n"
+                  f"  0: for exit")
             device_selection = int(input(f"Which device do you want to control (1-{len(devices)}): ")) - 1
+            if device_selection == -1:
+                keep_running = False
+                exit()
+
             selected_device: RadioMotor = devices[device_selection]
             print("List of possible operations: \n"
                   "  1: up\n"
                   "  2: down\n"
                   "  3: set position\n"
-                  "  4: get Status\n"
+                  "  4: get position\n"
+                  "  5: get status\n"
                   "  9: set name\n"
                   "  0: cancel")
-            operation = int(input("What do you want to do? (0-5): "))
+            operation = int(input("What do you want to do? (0-5,9): "))
 
             if operation == 1:
                 print(selected_device.move_up())
@@ -650,4 +657,4 @@ class Connector:
                 if exit_run != 'y' or exit_run != 'y':
                     keep_running = False
                 else:
-                    print("-------------------------------------------------------------------")
+                    print("--------------------------------------------------------------------------")
