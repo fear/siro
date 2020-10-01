@@ -1,7 +1,7 @@
 import json
 import const
 
-from siro import Connector, Bridge, RadioMotor
+from .siro import RadioMotor, Bridge, Connector
 
 
 def aprint(some_text) -> None:
@@ -15,18 +15,16 @@ def main1(key, addr) -> None:
 def main2(key) -> None:
     bridge: Bridge = Connector.bridge_factory(key)
 
-    bridge.print_variable()
-    # devices = await bridge.get_devices()
-    # device: RadioMotor = devices[0]
-    #
-    # await asyncio.gather(
-    #     aprint(await device.up()),
-    #     # device.down(),
-    #     # device.position(40),
-    #     # device.position(35),
-    #     # device.stop(),
-    #     # device.get_status(),
-    # )
+    bridge.print_device_info()
+    devices = bridge.get_devices()
+    device: RadioMotor = devices[0]
+
+    device.move_up()
+    device.move_down()
+    device.move_to_position(40)
+    device.move_to_position(35)
+    device.move_stop()
+    device.get_status()
 
 
 if __name__ == '__main__':

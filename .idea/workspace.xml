@@ -21,6 +21,9 @@
   <component name="ChangeListManager">
     <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="some tuning">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/siro/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/demo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/siro/siro.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/siro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/siro/test.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,52 +63,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.test">
-    <configuration default="true" type="DjangoTestsConfigurationType">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="TARGET" value="" />
-      <option name="SETTINGS_FILE" value="" />
-      <option name="CUSTOM_SETTINGS" value="false" />
-      <option name="USE_OPTIONS" value="false" />
-      <option name="OPTIONS" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="ADDITIONAL_ARGS" value="" />
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="siro" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -194,99 +151,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration default="true" type="Python.FlaskServer">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="launchJavascriptDebuger" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="Tox" factoryName="Tox">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Docutils task">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="docs" factoryName="Sphinx task">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="docutils_input_file" value="" />
-      <option name="docutils_output_file" value="" />
-      <option name="docutils_params" value="" />
-      <option name="docutils_task" value="" />
-      <option name="docutils_open_in_browser" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Unittests">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.siro" />
       <item itemvalue="Python.demo" />
@@ -315,6 +179,7 @@
       <workItem from="1601273980738" duration="22358000" />
       <workItem from="1601298921365" duration="706000" />
       <workItem from="1601458403099" duration="5270000" />
+      <workItem from="1601545507110" duration="5767000" />
     </task>
     <task id="LOCAL-00001" summary="replace pycrypto with pacryptodome">
       <created>1601035169440</created>
@@ -482,12 +347,12 @@
     </state>
     <state width="1257" height="491" key="GridCell.Tab.1.right/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601059358483" />
     <state width="2514" height="461" key="GridCell.Tab.1.right/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601296817036" />
-    <state x="2551" y="375" key="SettingsEditor" timestamp="1601463263105">
+    <state x="2022" y="369" key="SettingsEditor" timestamp="1601545545096">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601026784982" />
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299165507" />
-    <state x="2551" y="375" key="SettingsEditor/0.0.5120.1400@0.0.5120.1400" timestamp="1601463263105" />
+    <state x="2022" y="369" key="SettingsEditor/0.0.5120.1400@0.0.5120.1400" timestamp="1601545545096" />
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1601472363228">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
@@ -505,10 +370,11 @@
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2112" y="432" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601043501453" />
-    <state x="2223" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1601056271659">
+    <state x="2223" y="320" width="672" height="678" key="search.everywhere.popup" timestamp="1601550859971">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2223" y="320" width="672" height="678" key="search.everywhere.popup/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601056271659" />
+    <state x="2223" y="320" width="672" height="678" key="search.everywhere.popup/0.0.5120.1400@0.0.5120.1400" timestamp="1601550859971" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
