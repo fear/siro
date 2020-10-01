@@ -1,13 +1,48 @@
-# noinspection DuplicatedCode
 import json
-import logging
 
-from abc import ABC
-from const import *
+from abc import (
+    ABC
+)
+from const import (
+    CALLBACK_PORT,
+    CONFIGFILE_DEVICE_NAMES,
+    CURRENT_STATE,
+    DEVICE_TYPES,
+    DOWN,
+    LOG_FILE,
+    LOG_LEVEL,
+    MSG_TYPES,
+    MULTICAST_GRP,
+    POSITION,
+    RADIO_MOTOR,
+    SEND_PORT,
+    STATE_DOWN,
+    STATE_UP,
+    STOP,
+    UDP_TIMEOUT,
+    UP,
+    WIFI_BRIDGE,
+)
+from socket import (
+    AF_INET,
+    IPPROTO_IP,
+    IPPROTO_UDP,
+    IP_ADD_MEMBERSHIP,
+    IP_MULTICAST_TTL,
+    SOCK_DGRAM,
+    inet_aton,
+    socket,
+)
+from logging import (
+    Logger,
+    getLogger,
+    FileHandler,
+    Formatter,
+)
 
 
 class Device(ABC):
-    def __init__(self, mac: str, devicetype: str, logger: logging.Logger = None) -> None:
+    def __init__(self, mac: str, devicetype: str, logger: Logger = None) -> None:
         self._log = self._init_log(logger)
         self._mac = mac
         self._devicetype = devicetype
@@ -18,14 +53,14 @@ class Device(ABC):
         self._last_update = None
 
     @staticmethod
-    def _init_log(logger_: logging.Logger) -> logging.Logger:
+    def _init_log(logger_: Logger) -> Logger:
         if logger_:
             return logger_
         else:
-            logger = logging.getLogger(__name__)
+            logger = getLogger(__name__)
             logger.setLevel(LOG_LEVEL)
-            file_handler = logging.FileHandler(LOG_FILE)
-            formatter = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
+            file_handler = FileHandler(LOG_FILE)
+            formatter = Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
             file_handler.setFormatter(formatter)
             logger.addHandler(file_handler)
             return logger
@@ -89,7 +124,7 @@ class Device(ABC):
     def get_rssi(self) -> int:
         return self._rssi
 
-    def get_logger(self) -> logging.Logger:
+    def get_logger(self) -> Logger:
         return self._log
 
     def is_online(self):
@@ -103,28 +138,30 @@ class Device(ABC):
 
 class Bridge(Device):
     # noinspection PyTypeChecker,PyMissingConstructor
-    def __init__(self, connector, logger: logging.Logger = None, bridge_address: str = '') -> None:
+    def __init__(self, connector, logger: Logger = None, bridge_address: str = '') -> None:
         super().__init__('', WIFI_BRIDGE, logger)
-        self._connector = connector
-        self._key = ''
-        self._access_token = ''
-        self._bridge_address = bridge_address
-        self._callback_address = ''
-        self._protocol_version = ''
-        self._firmware = ''
-        self._token = ''
-        self._rssi = 0
-        self._current_state = 0
-        self._devices = []
-        self._number_of_devices = ''
-        self._key_accepted = ''
+        self._connector: Connector = connector
+        self._key: str = ''
+        self._access_token: str = ''
+        self._bridge_address: str = bridge_address
+        self._callback_address: str = ''
+        self._protocol_version: str = ''
+        self._firmware: str = ''
+        self._token: str = ''
+        self._rssi: int = 0
+        self._current_state: int = 0
+        self._devices: list = []
+        self._number_of_devices: int = None
+        self._key_accepted: bool = None
+        self._sock: socket = None
 
-        self._msg_device_list = {}
-        self._msg_callback = {}
+        self._msg_device_list: dict = {}
+        self._msg_callback: dict = {}
 
     def init(self, key: str, callback_address: str = '') -> None:
         self._key = key
         self._callback_address = self._ident_callback_address(callback_address)
+        self._init_socket()
         self._msg_device_list, self._bridge_address = self._load_device_list_from_bridge()
         self._mac = self._msg_device_list["mac"]
         self._token = self._msg_device_list["token"]
@@ -139,10 +176,10 @@ class Bridge(Device):
 
     def _ident_callback_address(self, callback_address: str = "") -> str:
         if callback_address == '':
-            import socket as so
-            s = so.socket(so.AF_INET, so.SOCK_DGRAM)
+            s = socket(AF_INET, SOCK_DGRAM)
             s.connect(("208.67.222.222", 80))
             address_ = s.getsockname()[0]
+            s.close()
         else:
             address_ = callback_address
 
@@ -238,18 +275,58 @@ class Bridge(Device):
         print(f"Message Heartbeat: {self._msg_status}")
         print(f"Message Device list: {self._msg_device_list}")
 
-    def send_payload(self, payload: str) -> (dict, str):
-        from socket import (
-            AF_INET,
-            IPPROTO_UDP,
-            # IP_ADD_MEMBERSHIP,
-            IP_MULTICAST_TTL,
-            IPPROTO_IP,
-            SOCK_DGRAM,
-            # inet_aton,
-            socket,
-        )
+    def _init_socket(self) -> None:
+        try:
+            s = socket(AF_INET, SOCK_DGRAM)
+            s.bind(('', CALLBACK_PORT))
+            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
+            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
+            self._sock = s
+        except Exception:
+            raise
 
+    def _set_socket_timeout(self, timeout: int) -> None:
+        self._sock.settimeout(timeout)
+
+    def _get_socket(self) -> socket:
+        return self._sock
+
+    def send_payload(self, payload: str) -> (dict, str):
+        if self._bridge_address == '':
+            remote_ip = MULTICAST_GRP
+        else:
+            remote_ip = self._bridge_address
+        try:
+            self._set_socket_timeout(UDP_TIMEOUT)
+            self._get_socket().sendto(payload.encode(), (remote_ip, SEND_PORT))
+            self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
+
+            data, address = self._get_socket().recvfrom(1024)
+            message = json.loads(data.decode('utf-8'))
+
+            self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
+            return message, address[0]
+        except Exception:
+            raise
+
+    def get_callback_from_bridge(self, timeout: int = 60) -> dict:
+        # noinspection PyBroadException
+        try:
+            self._set_socket_timeout(timeout)
+            msg = self._get_socket().recv(1024)
+        except Exception as e:
+            self._log.warning(e)
+            return {'msgType': 'timeout'}
+        data = json.loads(msg.decode('utf-8'))
+        self._set_last_msg_callback(data)
+
+        if data['msgType'] == MSG_TYPES['REPORT']:
+            self._set_last_msg_callback(data)
+            return data
+        else:
+            self.get_callback_from_bridge(timeout=timeout)
+
+    def send_payload_old(self, payload: str) -> (dict, str):
         if self._bridge_address == '':
             remote_ip = MULTICAST_GRP
         else:
@@ -273,19 +350,11 @@ class Bridge(Device):
         except Exception:
             raise
 
-    def get_callback_from_bridge(self, sock=None, timeout: int = 60) -> dict:
-        from socket import (
-            AF_INET,
-            IP_ADD_MEMBERSHIP,
-            IPPROTO_IP,
-            SOCK_DGRAM,
-            inet_aton,
-            socket,
-        )
-
+    def get_callback_from_bridge_old(self, sock=None, timeout: int = 60) -> dict:
         if sock is None:
             s = socket(AF_INET, SOCK_DGRAM)
             s.bind(('', CALLBACK_PORT))
+            s.settimeout(timeout)
             mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
             s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
         else:
@@ -300,7 +369,7 @@ class Bridge(Device):
         self._set_last_msg_callback(data)
 
         if data['msgType'] == MSG_TYPES['REPORT']:
-            s.close()
+            # s.close()
             self._set_last_msg_callback(data)
             return data
         else:
@@ -363,7 +432,7 @@ class Bridge(Device):
 
 
 class RadioMotor(Device):
-    def __init__(self, mac: str, siro_bridge: Bridge, logger: logging.Logger = None) -> None:
+    def __init__(self, mac: str, siro_bridge: Bridge, logger: Logger = None) -> None:
         super().__init__(mac, RADIO_MOTOR, logger)
         self._bridge = siro_bridge
         self._type = ''
@@ -412,16 +481,19 @@ class RadioMotor(Device):
             status = self.get_status(force_update=True)
         else:
             status = self._msg_status
-        self._type = status['data']['type']
-        self._operation = status['data']['operation']
-        self._current_position = status['data']['currentPosition']
-        self._current_angle = status['data']['currentAngle']
-        self._current_state = status['data']['currentState']
-        self._voltage_mode = status['data']['voltageMode']
-        self._battery_level = status['data']['batteryLevel']
-        self._wireless_mode = status['data']['wirelessMode']
-        self._rssi = status['data']['RSSI']
-        self._last_action = status['msgType']
+        try:
+            self._type = status['data']['type']
+            self._operation = status['data']['operation']
+            self._current_position = status['data']['currentPosition']
+            self._current_angle = status['data']['currentAngle']
+            self._current_state = status['data']['currentState']
+            self._voltage_mode = status['data']['voltageMode']
+            self._battery_level = status['data']['batteryLevel']
+            self._wireless_mode = status['data']['wirelessMode']
+            self._rssi = status['data']['RSSI']
+            self._last_action = status['msgType']
+        except Exception:
+            raise
 
     def move_down(self) -> dict:
         msg = self._set_device(DOWN)
@@ -511,19 +583,23 @@ class Connector:
         pass
 
     @staticmethod
-    def bridge_factory(key: str, log: logging.Logger = None, bridge_address: str = '') -> Bridge:
+    def bridge_factory(key: str, log: Logger = None, bridge_address: str = '') -> Bridge:
         new_bridge = Bridge(Connector, log, bridge_address)
         new_bridge.init(key)
         return new_bridge
 
     @staticmethod
-    def device_factory(mac: str, devicetype: str, bridge: Bridge, log: logging.Logger = None) -> Device:
+    def device_factory(mac: str, devicetype: str, bridge: Bridge, log: Logger = None) -> Device:
         if devicetype == RADIO_MOTOR:
             new_device = RadioMotor(mac, bridge, log)
             new_device.init()
             return new_device
         else:
             raise NotImplemented('By now there are just the 433Mhz Radio Motors implemented.')
+
+    @staticmethod
+    def get_device_name(device: Device):
+        return device.get_name()
 
     def start_cli(self, key: str, bridge_address: str = '') -> None:
         bridge = self.bridge_factory(
@@ -535,22 +611,30 @@ class Connector:
         keep_running = True
         while keep_running:
             print("List of available devices: ")
+            devices.sort(key=self.get_device_name)
             for device in devices:
                 index = devices.index(device) + 1
                 name = f"{device.get_name()} " \
                        f"(mac: {device.get_mac()}, " \
                        f"type: {DEVICE_TYPES[device.get_devicetype()]})"
                 print(f"  {index}: {name}")
+            print(f"--------------------------------------------------------------------\n"
+                  f"  0: for exit")
             device_selection = int(input(f"Which device do you want to control (1-{len(devices)}): ")) - 1
+            if device_selection == -1:
+                keep_running = False
+                exit()
+
             selected_device: RadioMotor = devices[device_selection]
             print("List of possible operations: \n"
                   "  1: up\n"
                   "  2: down\n"
                   "  3: set position\n"
-                  "  4: get Status\n"
+                  "  4: get position\n"
+                  "  5: get status\n"
                   "  9: set name\n"
                   "  0: cancel")
-            operation = int(input("What do you want to do? (0-5): "))
+            operation = int(input("What do you want to do? (0-5,9): "))
 
             if operation == 1:
                 print(selected_device.move_up())
@@ -573,4 +657,4 @@ class Connector:
                 if exit_run != 'y' or exit_run != 'y':
                     keep_running = False
                 else:
-                    print("-------------------------------------------------------------------")
+                    print("--------------------------------------------------------------------------")
