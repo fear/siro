@@ -1,18 +1,20 @@
 import json
 
-from siro import RadioMotor, Bridge, Connector
+from siro import (
+    RadioMotor,
+    Bridge,
+    Connector
+)
 
 
-def aprint(some_text) -> None:
-    print(some_text)
+# noinspection PyShadowingNames
+def cli_demo(key_, addr_="") -> None:
+    Connector().start_cli(key_, addr_)
 
 
-def main1(key, addr="") -> None:
-    Connector().start_cli(key, addr)
-
-
-def main2(key) -> None:
-    bridge: Bridge = Connector.bridge_factory(key)
+# noinspection PyShadowingNames
+def class_usage_demo(key_) -> None:
+    bridge: Bridge = Connector.bridge_factory(key_)
 
     bridge.print_device_info()
     devices = bridge.get_devices()
@@ -28,4 +30,7 @@ def main2(key) -> None:
 
 if __name__ == '__main__':
     config_ = json.load(open('config.json'))
-    main1(config_['key'])
+    key_ = config_['key']
+
+    cli_demo(key_)
+    # class_usage_demo(key)
