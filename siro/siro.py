@@ -161,6 +161,7 @@ class Bridge(Device):
     def init(self, key: str, callback_address: str = '') -> None:
         self._key = key
         self._callback_address = self._ident_callback_address(callback_address)
+        self._init_socket()
         self._msg_device_list, self._bridge_address = self._load_device_list_from_bridge()
         self._mac = self._msg_device_list["mac"]
         self._token = self._msg_device_list["token"]
@@ -175,10 +176,10 @@ class Bridge(Device):
 
     def _ident_callback_address(self, callback_address: str = "") -> str:
         if callback_address == '':
-            import socket as so
-            s = so.socket(so.AF_INET, so.SOCK_DGRAM)
+            s = socket(AF_INET, SOCK_DGRAM)
             s.connect(("208.67.222.222", 80))
             address_ = s.getsockname()[0]
+            s.close()
         else:
             address_ = callback_address
 
@@ -275,7 +276,14 @@ class Bridge(Device):
         print(f"Message Device list: {self._msg_device_list}")
 
     def _init_socket(self) -> None:
-        pass
+        try:
+            s = socket(AF_INET, SOCK_DGRAM)
+            s.bind((self._callback_address, CALLBACK_PORT))
+            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
+            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
+            self._sock = s
+        except Exception:
+            raise
 
     def _get_socket(self) -> socket:
         return self._sock
@@ -286,12 +294,8 @@ class Bridge(Device):
         else:
             remote_ip = self._bridge_address
         try:
-            s = socket(AF_INET, SOCK_DGRAM)
-            s.bind((self._callback_address, CALLBACK_PORT))
+            s = self._sock
             s.settimeout(UDP_TIMEOUT)
-            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
-            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
-
             s.sendto(payload.encode(), (remote_ip, SEND_PORT))
             self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
 
@@ -299,11 +303,29 @@ class Bridge(Device):
             message = json.loads(data.decode('utf-8'))
             port = address[1]
             address = address[0]
-            s.close()
             self.get_logger().debug(f'{self._mac}: Receive from {address}:{port}: {message}.')
             return message, address
         except Exception:
             raise
+
+    def get_callback_from_bridge(self, timeout: int = 60) -> dict:
+        # noinspection PyBroadException
+        try:
+            s = self._sock
+            s.settimeout(timeout)
+            msg = s.recv(1024)
+        except Exception as e:
+            self._log.warning(e)
+            return {'msgType': 'timeout'}
+        data = json.loads(msg.decode('utf-8'))
+        self._set_last_msg_callback(data)
+
+        if data['msgType'] == MSG_TYPES['REPORT']:
+            # s.close()
+            self._set_last_msg_callback(data)
+            return data
+        else:
+            self.get_callback_from_bridge(timeout=timeout)
 
     def send_payload_old(self, payload: str) -> (dict, str):
         if self._bridge_address == '':
@@ -329,7 +351,7 @@ class Bridge(Device):
         except Exception:
             raise
 
-    def get_callback_from_bridge(self, sock=None, timeout: int = 60) -> dict:
+    def get_callback_from_bridge_old(self, sock=None, timeout: int = 60) -> dict:
         if sock is None:
             s = socket(AF_INET, SOCK_DGRAM)
             s.bind(('', CALLBACK_PORT))
@@ -348,7 +370,7 @@ class Bridge(Device):
         self._set_last_msg_callback(data)
 
         if data['msgType'] == MSG_TYPES['REPORT']:
-            s.close()
+            # s.close()
             self._set_last_msg_callback(data)
             return data
         else:
@@ -460,16 +482,19 @@ class RadioMotor(Device):
             status = self.get_status(force_update=True)
         else:
             status = self._msg_status
-        self._type = status['data']['type']
-        self._operation = status['data']['operation']
-        self._current_position = status['data']['currentPosition']
-        self._current_angle = status['data']['currentAngle']
-        self._current_state = status['data']['currentState']
-        self._voltage_mode = status['data']['voltageMode']
-        self._battery_level = status['data']['batteryLevel']
-        self._wireless_mode = status['data']['wirelessMode']
-        self._rssi = status['data']['RSSI']
-        self._last_action = status['msgType']
+        try:
+            self._type = status['data']['type']
+            self._operation = status['data']['operation']
+            self._current_position = status['data']['currentPosition']
+            self._current_angle = status['data']['currentAngle']
+            self._current_state = status['data']['currentState']
+            self._voltage_mode = status['data']['voltageMode']
+            self._battery_level = status['data']['batteryLevel']
+            self._wireless_mode = status['data']['wirelessMode']
+            self._rssi = status['data']['RSSI']
+            self._last_action = status['msgType']
+        except Exception:
+            raise
 
     def move_down(self) -> dict:
         msg = self._set_device(DOWN)
@@ -573,6 +598,10 @@ class Connector:
         else:
             raise NotImplemented('By now there are just the 433Mhz Radio Motors implemented.')
 
+    @staticmethod
+    def get_device_name(device: Device):
+        return device.get_name()
+
     def start_cli(self, key: str, bridge_address: str = '') -> None:
         bridge = self.bridge_factory(
             key=key,
@@ -583,6 +612,7 @@ class Connector:
         keep_running = True
         while keep_running:
             print("List of available devices: ")
+            devices.sort(key=self.get_device_name)
             for device in devices:
                 index = devices.index(device) + 1
                 name = f"{device.get_name()} " \
