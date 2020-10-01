@@ -373,7 +373,7 @@ class Bridge(Device):
             self._set_last_msg_callback(data)
             return data
         else:
-            self.get_callback_from_bridge(sock=s, timeout=timeout)
+            self.get_callback_from_bridge(timeout=timeout)
 
     # noinspection PyTypeChecker
     def load_devices(self) -> None:
