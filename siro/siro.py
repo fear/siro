@@ -278,12 +278,15 @@ class Bridge(Device):
     def _init_socket(self) -> None:
         try:
             s = socket(AF_INET, SOCK_DGRAM)
-            s.bind((self._callback_address, CALLBACK_PORT))
+            s.bind(('', CALLBACK_PORT))
             mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
             s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
             self._sock = s
         except Exception:
             raise
+
+    def _set_socket_timeout(self, timeout: int) -> None:
+        self._sock.settimeout(timeout)
 
     def _get_socket(self) -> socket:
         return self._sock
@@ -294,26 +297,23 @@ class Bridge(Device):
         else:
             remote_ip = self._bridge_address
         try:
-            s = self._sock
-            s.settimeout(UDP_TIMEOUT)
-            s.sendto(payload.encode(), (remote_ip, SEND_PORT))
+            self._set_socket_timeout(UDP_TIMEOUT)
+            self._get_socket().sendto(payload.encode(), (remote_ip, SEND_PORT))
             self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
 
-            data, address = s.recvfrom(1024)
+            data, address = self._get_socket().recvfrom(1024)
             message = json.loads(data.decode('utf-8'))
-            port = address[1]
-            address = address[0]
-            self.get_logger().debug(f'{self._mac}: Receive from {address}:{port}: {message}.')
-            return message, address
+
+            self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
+            return message, address[0]
         except Exception:
             raise
 
     def get_callback_from_bridge(self, timeout: int = 60) -> dict:
         # noinspection PyBroadException
         try:
-            s = self._sock
-            s.settimeout(timeout)
-            msg = s.recv(1024)
+            self._set_socket_timeout(timeout)
+            msg = self._get_socket().recv(1024)
         except Exception as e:
             self._log.warning(e)
             return {'msgType': 'timeout'}
@@ -321,7 +321,6 @@ class Bridge(Device):
         self._set_last_msg_callback(data)
 
         if data['msgType'] == MSG_TYPES['REPORT']:
-            # s.close()
             self._set_last_msg_callback(data)
             return data
         else:
