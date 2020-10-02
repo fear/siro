@@ -3,7 +3,7 @@ import json
 from abc import (
     ABC
 )
-from const import (
+from .const import (
     CALLBACK_PORT,
     CONFIGFILE_DEVICE_NAMES,
     CURRENT_STATE,
@@ -26,9 +26,7 @@ from const import (
 from socket import (
     AF_INET,
     IPPROTO_IP,
-    IPPROTO_UDP,
     IP_ADD_MEMBERSHIP,
-    IP_MULTICAST_TTL,
     SOCK_DGRAM,
     inet_aton,
     socket,
@@ -70,8 +68,9 @@ class Device(ABC):
         self._last_update = datetime.now()
 
     def _set_last_msg_status(self, msg: dict) -> None:
-        self._msg_status = msg
-        self._set_last_update()
+        if msg['mac'] == self._mac:
+            self._msg_status = msg
+            self._set_last_update()
 
     def _get_persisted_name_from_file(self, config_file: str = CONFIGFILE_DEVICE_NAMES) -> str:
         try:
@@ -221,20 +220,23 @@ class Bridge(Device):
             self._access_token = access_token.upper()
         return self._access_token
 
-    def _update_status(self) -> None:
-        payload = json.dumps(
-            {
-                "msgType": MSG_TYPES['WRITE'],
-                "mac": self._mac,
-                "deviceType": self._devicetype,
-                "AccessToken": self._access_token,
-                "msgID": self.get_timestamp(),
-                "data": {'operation': 5}
-            }
-        )
+    def _update_status(self, force_update: bool = False) -> None:
+        if force_update:
+            payload = json.dumps(
+                {
+                    "msgType": MSG_TYPES['WRITE'],
+                    "mac": self._mac,
+                    "deviceType": self._devicetype,
+                    "AccessToken": self._access_token,
+                    "msgID": self.get_timestamp(),
+                    "data": {'operation': 5}
+                }
+            )
 
-        status = self.send_payload(payload)
-        status = status[0]
+            status = self.send_payload(payload)
+            status = status[0]
+        else:
+            status = self._msg_status
 
         self._current_state = status['data']['currentState']
         self._number_of_devices = status['data']['numberOfDevices']
@@ -248,7 +250,7 @@ class Bridge(Device):
 
     def get_status(self, force_update: bool = False) -> dict:
         if force_update:
-            self._update_status()
+            self._update_status(force_update=True)
 
         return self._msg_status
 
@@ -259,21 +261,6 @@ class Bridge(Device):
                 raise ValueError('The key was rejected!')
         except KeyError:
             return True
-
-    def print_device_info(self) -> None:
-        print(f"Mac: {self._mac}")
-        print(f"Device Type: {self._devicetype}")
-        print(f"Key: {self._key}")
-        print(f"Access Token: {self._access_token}")
-        print(f"current State: {self._current_state}")
-        print(f"RSSI: {self._rssi}")
-        print(f"Bridge Address: {self._bridge_address}")
-        print(f"Callback Address: {self._callback_address}")
-        print(f"Protocol Version: {self._protocol_version}")
-        print(f"Firmware Version: {self._firmware}")
-        print(f"Token: {self._token}")
-        print(f"Message Heartbeat: {self._msg_status}")
-        print(f"Message Device list: {self._msg_device_list}")
 
     def _init_socket(self) -> None:
         try:
@@ -304,8 +291,13 @@ class Bridge(Device):
             data, address = self._get_socket().recvfrom(1024)
             message = json.loads(data.decode('utf-8'))
 
-            self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
-            return message, address[0]
+            if message['msgType'] != MSG_TYPES['ALIVE']:
+                self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
+                return message, address[0]
+            else:
+                self._set_last_msg_status(message)
+                self._update_status()
+                return self.send_payload(payload)
         except Exception:
             raise
 
@@ -324,56 +316,8 @@ class Bridge(Device):
             self._set_last_msg_callback(data)
             return data
         else:
-            self.get_callback_from_bridge(timeout=timeout)
-
-    def send_payload_old(self, payload: str) -> (dict, str):
-        if self._bridge_address == '':
-            remote_ip = MULTICAST_GRP
-        else:
-            remote_ip = self._bridge_address
-        try:
-            s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-            s.setsockopt(IPPROTO_IP, IP_MULTICAST_TTL, 32)
-            s.bind((self._callback_address, CALLBACK_PORT))
-            s.settimeout(UDP_TIMEOUT)
-
-            s.sendto(payload.encode(), (remote_ip, SEND_PORT))
-            self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
-
-            data, address = s.recvfrom(1024)
-            message = json.loads(data.decode('utf-8'))
-            port = address[1]
-            address = address[0]
-            s.close()
-            self.get_logger().debug(f'{self._mac}: Receive from {address}:{port}: {message}.')
-            return message, address
-        except Exception:
-            raise
-
-    def get_callback_from_bridge_old(self, sock=None, timeout: int = 60) -> dict:
-        if sock is None:
-            s = socket(AF_INET, SOCK_DGRAM)
-            s.bind(('', CALLBACK_PORT))
-            s.settimeout(timeout)
-            mreq = inet_aton(MULTICAST_GRP) + inet_aton(self._callback_address)
-            s.setsockopt(IPPROTO_IP, IP_ADD_MEMBERSHIP, mreq)
-        else:
-            s = sock
-        # noinspection PyBroadException
-        try:
-            msg = s.recv(1024)
-        except Exception as e:
-            self._log.warning(e)
-            return {'msgType': 'timeout'}
-        data = json.loads(msg.decode('utf-8'))
-        self._set_last_msg_callback(data)
-
-        if data['msgType'] == MSG_TYPES['REPORT']:
-            # s.close()
-            self._set_last_msg_callback(data)
-            return data
-        else:
-            self.get_callback_from_bridge(timeout=timeout)
+            self.get_logger().warning(f"get_callback_from_bridge -> not Report: {data}")
+            return self.get_callback_from_bridge(timeout=timeout)
 
     # noinspection PyTypeChecker
     def load_devices(self) -> None:
@@ -470,7 +414,7 @@ class RadioMotor(Device):
         self.update_status()
         return msg[0]
 
-    def _callback_after_stop(self, timeout: int = 60) -> dict:
+    def _callback_after_stop(self, timeout: int = 30) -> dict:
         msg = self._bridge.get_callback_from_bridge(timeout=timeout)
         self._set_last_msg_status(msg)
         self.update_status()
@@ -537,7 +481,8 @@ class RadioMotor(Device):
         return msg
 
     def move_to_position(self, position: int) -> dict:
-        old_position = self._set_device(POSITION, position)['data']['currentPosition']
+        msg = self._set_device(POSITION, position)
+        old_position = msg['data']['currentPosition']
         if old_position < position:
             self._state_move = CURRENT_STATE['State']['CLOSING']
         else:
