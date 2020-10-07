@@ -25,15 +25,10 @@
     </select>
   </component>
   <component name="ChangeListManager">
-<<<<<<< Updated upstream
-    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="some socket tuning for linux os">
-      <change afterPath="$PROJECT_DIR$/test/async_demo.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test.py" afterDir="false" />
+    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="implemented AES Class, for plain PythonCode...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/siro/siro.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/siro.py" afterDir="false" />
     </list>
-=======
-    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="implemented AES Class, for plain PythonCode..." />
->>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,7 +73,7 @@
       <recent name="D:\Workspace\siro_connector\tests" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test (1)">
+  <component name="RunManager" selected="Python.demo">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="siro" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -93,6 +88,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="aes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="siro" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="D:\Workspace\siro_connector\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/siro/aes.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -211,43 +228,21 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="siro" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="D:\Workspace\siro_connector\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/siro/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="Python.siro" />
       <item itemvalue="Python.demo" />
-      <item itemvalue="Python.test" />
       <item itemvalue="Python.siro (1)" />
       <item itemvalue="Python.async_demo" />
       <item itemvalue="Python.test (1)" />
+      <item itemvalue="Python.aes" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test (1)" />
-        <item itemvalue="Python.async_demo" />
         <item itemvalue="Python.demo" />
         <item itemvalue="Python.siro (1)" />
-        <item itemvalue="Python.test" />
+        <item itemvalue="Python.aes" />
+        <item itemvalue="Python.test (1)" />
+        <item itemvalue="Python.async_demo" />
       </list>
     </recent_temporary>
   </component>
@@ -269,10 +264,7 @@
       <workItem from="1601458403099" duration="5270000" />
       <workItem from="1601545507110" duration="16427000" />
       <workItem from="1601641251109" duration="4715000" />
-<<<<<<< Updated upstream
-=======
-      <workItem from="1602055969669" duration="5751000" />
->>>>>>> Stashed changes
+      <workItem from="1602055969669" duration="5048000" />
     </task>
     <task id="LOCAL-00001" summary="replace pycrypto with pacryptodome">
       <created>1601035169440</created>
@@ -393,9 +385,6 @@
       <option name="project" value="LOCAL" />
       <updated>1601564650793</updated>
     </task>
-<<<<<<< Updated upstream
-    <option name="localTasksCounter" value="18" />
-=======
     <task id="LOCAL-00018" summary="implemented AES Class, for plain PythonCode...">
       <created>1602060219523</created>
       <option name="number" value="00018" />
@@ -403,15 +392,7 @@
       <option name="project" value="LOCAL" />
       <updated>1602060219523</updated>
     </task>
-    <task id="LOCAL-00019" summary="implemented AES Class, for plain PythonCode...">
-      <created>1602061140187</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1602061140187</updated>
-    </task>
-    <option name="localTasksCounter" value="20" />
->>>>>>> Stashed changes
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -451,7 +432,8 @@
     <MESSAGE value="using 1 socket" />
     <MESSAGE value="some socket tuning" />
     <MESSAGE value="some socket tuning for linux os" />
-    <option name="LAST_COMMIT_MESSAGE" value="some socket tuning for linux os" />
+    <MESSAGE value="implemented AES Class, for plain PythonCode..." />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented AES Class, for plain PythonCode..." />
   </component>
   <component name="WindowStateProjectService">
     <state x="2152" y="362" width="816" height="729" key="#Intentions" timestamp="1601033994385">
@@ -482,28 +464,32 @@
     <state x="2340" y="458" key="FileChooserDialogImpl/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601062514635" />
     <state x="2340" y="458" key="FileChooserDialogImpl/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299584719" />
     <state x="2340" y="458" key="FileChooserDialogImpl/0.0.5120.1400@0.0.5120.1400" timestamp="1601460234176" />
-    <state width="2492" height="287" key="GridCell.Tab.0.bottom" timestamp="1601649694282">
+    <state width="2494" height="287" key="GridCell.Tab.0.bottom" timestamp="1602060981381">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state width="2514" height="206" key="GridCell.Tab.0.bottom/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601062541290" />
+    <state width="2494" height="287" key="GridCell.Tab.0.bottom/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602060981381" />
     <state width="2514" height="373" key="GridCell.Tab.0.bottom/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299632519" />
     <state width="2492" height="287" key="GridCell.Tab.0.bottom/0.0.5120.1400@0.0.5120.1400" timestamp="1601649694282" />
-    <state width="2492" height="287" key="GridCell.Tab.0.center" timestamp="1601649694282">
+    <state width="2494" height="287" key="GridCell.Tab.0.center" timestamp="1602060981381">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state width="2514" height="206" key="GridCell.Tab.0.center/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601062541290" />
+    <state width="2494" height="287" key="GridCell.Tab.0.center/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602060981381" />
     <state width="2514" height="373" key="GridCell.Tab.0.center/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299632519" />
     <state width="2492" height="287" key="GridCell.Tab.0.center/0.0.5120.1400@0.0.5120.1400" timestamp="1601649694282" />
-    <state width="2492" height="287" key="GridCell.Tab.0.left" timestamp="1601649694282">
+    <state width="2494" height="287" key="GridCell.Tab.0.left" timestamp="1602060981381">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state width="2514" height="206" key="GridCell.Tab.0.left/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601062541290" />
+    <state width="2494" height="287" key="GridCell.Tab.0.left/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602060981381" />
     <state width="2514" height="373" key="GridCell.Tab.0.left/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299632519" />
     <state width="2492" height="287" key="GridCell.Tab.0.left/0.0.5120.1400@0.0.5120.1400" timestamp="1601649694282" />
-    <state width="2492" height="287" key="GridCell.Tab.0.right" timestamp="1601649694282">
+    <state width="2494" height="287" key="GridCell.Tab.0.right" timestamp="1602060981381">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state width="2514" height="206" key="GridCell.Tab.0.right/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601062541290" />
+    <state width="2494" height="287" key="GridCell.Tab.0.right/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602060981381" />
     <state width="2514" height="373" key="GridCell.Tab.0.right/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299632519" />
     <state width="2492" height="287" key="GridCell.Tab.0.right/0.0.5120.1400@0.0.5120.1400" timestamp="1601649694282" />
     <state width="2514" height="461" key="GridCell.Tab.1.bottom" timestamp="1601296817036">
@@ -532,18 +518,11 @@
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601026784982" />
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299165507" />
     <state x="2022" y="369" key="SettingsEditor/0.0.5120.1400@0.0.5120.1400" timestamp="1601557396674" />
-<<<<<<< Updated upstream
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1601564653334">
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1602060229485">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601071557076" />
-=======
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1602061143015">
-      <screen x="0" y="0" width="5120" height="1400" />
-    </state>
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601071557076" />
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602061143015" />
->>>>>>> Stashed changes
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602060229485" />
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400@0.0.5120.1400" timestamp="1601564653334" />
     <state width="1287" height="700" key="XDebugger.FullValuePopup" timestamp="1601283654149">
       <screen x="0" y="0" width="5120" height="1400" />
@@ -585,14 +564,15 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/siro_connector$demo.coverage" NAME="demo Coverage Results" MODIFIED="1601287609603" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
-    <SUITE FILE_PATH="coverage/siro$siro__1_.coverage" NAME="siro (1) Coverage Results" MODIFIED="1601562048334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
-    <SUITE FILE_PATH="coverage/siro$demo.coverage" NAME="demo Coverage Results" MODIFIED="1601641810943" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/siro/" />
+    <SUITE FILE_PATH="coverage/siro$siro__1_.coverage" NAME="siro (1) Coverage Results" MODIFIED="1602059433967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro$async_demo.coverage" NAME="async_demo Coverage Results" MODIFIED="1601641952464" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
+    <SUITE FILE_PATH="coverage/siro$demo.coverage" NAME="demo Coverage Results" MODIFIED="1602060842560" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/siro/" />
     <SUITE FILE_PATH="coverage/siro_connector$udpmulticast__1_.coverage" NAME="udpmulticast (1) Coverage Results" MODIFIED="1601050215481" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro$siro_dev.coverage" NAME="demo Coverage Results" MODIFIED="1601299399060" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/siro$test.coverage" NAME="test Coverage Results" MODIFIED="1601551364310" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro_connector$siro_connector.coverage" NAME="siro_connector Coverage Results" MODIFIED="1601027122932" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro_connector$udpmulticast.coverage" NAME="udpmulticast Coverage Results" MODIFIED="1601031801012" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
+    <SUITE FILE_PATH="coverage/siro$aes.coverage" NAME="aes Coverage Results" MODIFIED="1602059009640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
     <SUITE FILE_PATH="coverage/siro_connector$Siro_Connector.coverage" NAME="Siro_Connector Coverage Results" MODIFIED="1601287211454" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/" />
     <SUITE FILE_PATH="coverage/siro$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1601649694276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
   </component>
