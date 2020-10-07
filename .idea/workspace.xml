@@ -25,10 +25,9 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="first async testing">
+    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="deleted testing stuff">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/async_demo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/test.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/siro/demo.py" beforeDir="false" afterPath="$PROJECT_DIR$/siro/demo.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -266,7 +265,7 @@
       <workItem from="1601545507110" duration="16427000" />
       <workItem from="1601641251109" duration="4715000" />
       <workItem from="1602055969669" duration="5048000" />
-      <workItem from="1602084870676" duration="778000" />
+      <workItem from="1602084870676" duration="1467000" />
     </task>
     <task id="LOCAL-00001" summary="replace pycrypto with pacryptodome">
       <created>1601035169440</created>
@@ -401,7 +400,14 @@
       <option name="project" value="LOCAL" />
       <updated>1602079601210</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="deleted testing stuff">
+      <created>1602086312367</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1602086312367</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,7 +449,8 @@
     <MESSAGE value="some socket tuning for linux os" />
     <MESSAGE value="implemented AES Class, for plain PythonCode..." />
     <MESSAGE value="first async testing" />
-    <option name="LAST_COMMIT_MESSAGE" value="first async testing" />
+    <MESSAGE value="deleted testing stuff" />
+    <option name="LAST_COMMIT_MESSAGE" value="deleted testing stuff" />
   </component>
   <component name="WindowStateProjectService">
     <state x="2152" y="362" width="816" height="729" key="#Intentions" timestamp="1601033994385">
@@ -528,11 +535,11 @@
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601026784982" />
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299165507" />
     <state x="2022" y="369" key="SettingsEditor/0.0.5120.1400@0.0.5120.1400" timestamp="1601557396674" />
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1602084905785">
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1602086318322">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601071557076" />
-    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602084905785" />
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602086318322" />
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400@0.0.5120.1400" timestamp="1601564653334" />
     <state width="1287" height="700" key="XDebugger.FullValuePopup" timestamp="1601283654149">
       <screen x="0" y="0" width="5120" height="1400" />

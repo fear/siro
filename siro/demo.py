@@ -10,23 +10,19 @@ from siro import (
 
 # noinspection PyShadowingNames
 async def class_usage_demo(key_, loop) -> None:
-    bridge: Bridge = Helper.bridge_factory(key_)
+    bridge: Bridge = await Helper.bridge_factory(key_, loop=loop)
     listen = asyncio.create_task(bridge.listen(loop))
 
     await listen
     devices: list = bridge.get_devices()
 
     device: RadioMotor = devices[0]
-    print(device.get_status())
     device.move_up()
     await asyncio.sleep(2)
     print(device.get_status())
     await asyncio.sleep(2)
     device.move_down()
     await asyncio.sleep(1)
-    # device.move_to_position(40)
-    # device.move_to_position(35)
-    # print(device.get_status())
     device.move_stop()
 
 if __name__ == '__main__':
