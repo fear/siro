@@ -1,7 +1,11 @@
-import json
-
 from abc import (
     ABC
+)
+from json import (
+    load,
+    loads,
+    decoder,
+    dumps,
 )
 from const import (
     CALLBACK_PORT,
@@ -39,10 +43,10 @@ from logging import (
 )
 
 
-__all__ = ["Device", "Bridge", "RadioMotor", "Helper", "AES"]
+__all__ = ["Bridge", "RadioMotor", "Helper"]
 
 
-class Device(ABC):
+class _Device(ABC):
     def __init__(self, mac: str, devicetype: str, logger: Logger = None) -> None:
         self._log = self._init_log(logger)
         self._mac = mac
@@ -77,8 +81,8 @@ class Device(ABC):
 
     def _get_persisted_name_from_file(self, config_file: str = CONFIGFILE_DEVICE_NAMES) -> str:
         try:
-            known_devices = json.load(open(config_file))
-        except (json.decoder.JSONDecodeError, FileNotFoundError):
+            known_devices = load(open(config_file))
+        except (decoder.JSONDecodeError, FileNotFoundError):
             self._log.debug(f'{self._mac}: There is no File {config_file}. Setting name to Unknown.')
             return '-unknown-'
         else:
@@ -94,8 +98,8 @@ class Device(ABC):
 
         device_exists = False
         try:
-            known_devices = json.load(open(config_file))
-        except json.decoder.JSONDecodeError:
+            known_devices = load(open(config_file))
+        except decoder.JSONDecodeError:
             known_devices = []
 
         for known_device in known_devices:
@@ -110,7 +114,7 @@ class Device(ABC):
                 }
             )
         name_file = open(config_file, 'w')
-        name_file.write(json.dumps(known_devices, indent=4))
+        name_file.write(dumps(known_devices, indent=4))
         name_file.close()
         self._log.debug(f'{self._mac}: Name was set to "{device_name}".')
 
@@ -138,7 +142,7 @@ class Device(ABC):
         return datetime.now().strftime("%Y%m%d%H%M%S%f")[0:17]
 
 
-class Bridge(Device):
+class Bridge(_Device):
     # noinspection PyTypeChecker,PyMissingConstructor
     def __init__(self, helper, logger: Logger = None, bridge_address: str = '') -> None:
         super().__init__('', WIFI_BRIDGE, logger)
@@ -195,7 +199,7 @@ class Bridge(Device):
         return self._connector
 
     def _load_device_list_from_bridge(self) -> (dict, str):
-        payload = json.dumps({
+        payload = dumps({
             'msgType': MSG_TYPES['LIST'],
             'msgID': self.get_timestamp()}
         )
@@ -215,15 +219,15 @@ class Bridge(Device):
             cipher_key = bytearray()
             cipher_key.extend(map(ord, key))
 
-            cipher = AES(cipher_key)
-            cipher_bytes = cipher.ecb_encrypt(token.encode("utf8"))
-            access_token = ''.join('%02x' % byte for byte in bytearray(cipher_bytes))
+            aes_ecb = _AESElectronicCodeBook(cipher_key)
+            cipher_bytes = aes_ecb.encrypt(token.encode("utf8"))
+            access_token = ''.join('%02x' % b for b in bytearray(cipher_bytes))
             self._access_token = access_token.upper()
         return self._access_token
 
     def _update_status(self, force_update: bool = False) -> None:
         if force_update:
-            payload = json.dumps(
+            payload = dumps(
                 {
                     "msgType": MSG_TYPES['WRITE'],
                     "mac": self._mac,
@@ -290,7 +294,7 @@ class Bridge(Device):
             self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
 
             data, address = self._get_socket().recvfrom(1024)
-            message = json.loads(data.decode('utf-8'))
+            message = loads(data.decode('utf-8'))
 
             if message['msgType'] != MSG_TYPES['ALIVE']:
                 self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
@@ -310,7 +314,7 @@ class Bridge(Device):
         except Exception as e:
             self._log.warning(e)
             return {'msgType': 'timeout'}
-        data = json.loads(msg.decode('utf-8'))
+        data = loads(msg.decode('utf-8'))
         self._set_last_msg_callback(data)
 
         if data['msgType'] == MSG_TYPES['REPORT']:
@@ -359,7 +363,7 @@ class Bridge(Device):
             self.load_devices()
             return self._devices
 
-    def get_device_by_mac(self, mac: str) -> Device:
+    def get_device_by_mac(self, mac: str) -> _Device:
         for known_device in self._devices:
             if known_device.get_mac() == mac:
                 return known_device
@@ -376,7 +380,7 @@ class Bridge(Device):
         return self._firmware
 
 
-class RadioMotor(Device):
+class RadioMotor(_Device):
     def __init__(self, mac: str, siro_bridge: Bridge, logger: Logger = None) -> None:
         super().__init__(mac, RADIO_MOTOR, logger)
         self._bridge = siro_bridge
@@ -400,7 +404,7 @@ class RadioMotor(Device):
         else:
             data = {'operation': action}
 
-        payload = json.dumps(
+        payload = dumps(
             {
                 "msgType": MSG_TYPES['WRITE'],
                 "mac": self.get_mac(),
@@ -495,7 +499,7 @@ class RadioMotor(Device):
 
     def get_status(self, force_update: bool = False) -> dict:
         if force_update:
-            payload = json.dumps(
+            payload = dumps(
                 {
                     'msgType': MSG_TYPES['READ'],
                     "mac": self.get_mac(),
@@ -535,7 +539,7 @@ class Helper(object):
         return new_bridge
 
     @staticmethod
-    def device_factory(mac: str, devicetype: str, bridge: Bridge, log: Logger = None) -> Device:
+    def device_factory(mac: str, devicetype: str, bridge: Bridge, log: Logger = None) -> _Device:
         if devicetype == RADIO_MOTOR:
             new_device = RadioMotor(mac, bridge, log)
             new_device.init()
@@ -544,7 +548,7 @@ class Helper(object):
             raise NotImplemented('By now there are just the 433Mhz Radio Motors implemented.')
 
     @staticmethod
-    def get_device_name(device: Device):
+    def get_device_name(device: _Device):
         return device.get_name()
 
     def start_cli(self, key: str, bridge_address: str = '') -> None:
@@ -606,7 +610,7 @@ class Helper(object):
                     print("--------------------------------------------------------------------------")
 
 
-class AES(object):
+class _AESElectronicCodeBook(object):
     """Contributes to https://github.com/ricmoo/pyaes
     """
 
@@ -966,7 +970,7 @@ class AES(object):
     def _bytes_to_string(binary):
         return bytes(binary)
 
-    def ecb_encrypt(self, text):
+    def encrypt(self, text):
         from copy import copy
 
         byte_text = self._string_to_bytes(text)
