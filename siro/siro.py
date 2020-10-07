@@ -1,3 +1,27 @@
+# MIT License
+#
+# Copyright (c) 2020 Felix Arnold
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import asyncio
+
 from abc import (
     ABC
 )
@@ -10,7 +34,6 @@ from json import (
 from const import (
     CALLBACK_PORT,
     CONFIGFILE_DEVICE_NAMES,
-    CURRENT_STATE,
     DEVICE_TYPES,
     DOWN,
     LOG_FILE,
@@ -20,8 +43,7 @@ from const import (
     POSITION,
     RADIO_MOTOR,
     SEND_PORT,
-    STATE_DOWN,
-    STATE_UP,
+    STATUS,
     STOP,
     UDP_TIMEOUT,
     UP,
@@ -136,6 +158,9 @@ class _Device(ABC):
     def is_online(self):
         return self._online
 
+    def set_status(self, status: dict) -> None:
+        raise NotImplemented
+
     @staticmethod
     def get_timestamp() -> str:
         from datetime import datetime
@@ -154,6 +179,8 @@ class Bridge(_Device):
         self._protocol_version: str = ''
         self._firmware: str = ''
         self._token: str = ''
+        self._transport = None
+        self._protocol: SiroUDPProtocol = None
         self._rssi: int = 0
         self._current_state: int = 0
         self._devices: list = []
@@ -168,7 +195,8 @@ class Bridge(_Device):
         self._key = key
         self._callback_address = self._ident_callback_address(callback_address)
         self._init_socket()
-        self._msg_device_list, self._bridge_address = self._load_device_list_from_bridge()
+        self._msg_device_list, self._bridge_address = self._init_device_list()
+
         self._mac = self._msg_device_list["mac"]
         self._token = self._msg_device_list["token"]
         self._protocol_version = self._msg_device_list['ProtocolVersion']
@@ -176,9 +204,17 @@ class Bridge(_Device):
         self._access_token = self._get_access_token()
         self._number_of_devices = len(self._msg_device_list['data'])-1
         self._devices = self.get_devices()
+        self.update_status()
 
-        self._set_last_msg_status(self.get_status(force_update=True))
-        self._key_accepted = self.validate_key()
+        # self._set_last_msg_status(self.get_status(force_update=True))
+        # self._key_accepted = self.validate_key()
+
+    async def listen(self, loop):
+        self._transport, self._protocol = await loop.create_datagram_endpoint(
+            SiroUDPProtocol,
+            sock=self._sock,
+        )
+        self._protocol.set_bridge(self)
 
     def _ident_callback_address(self, callback_address: str = "") -> str:
         if callback_address == '':
@@ -198,15 +234,23 @@ class Bridge(_Device):
     def get_connector(self) -> any:
         return self._connector
 
-    def _load_device_list_from_bridge(self) -> (dict, str):
-        payload = dumps({
-            'msgType': MSG_TYPES['LIST'],
-            'msgID': self.get_timestamp()}
-        )
-        return self.send_payload(payload)
+    def _init_device_list(self, waiting_for_response: bool = False) -> (dict, str):
+        if not waiting_for_response:
+            payload = dumps({
+                'msgType': MSG_TYPES['LIST'],
+                'msgID': self.get_timestamp()}
+            )
+            self.send_payload(payload)
 
-    def _set_last_msg_callback(self, msg: dict) -> None:
-        self._msg_callback = msg
+        data, address = self._get_socket().recvfrom(1024)
+        message = loads(data.decode('utf-8'))
+
+        if message['msgType'] == MSG_TYPES['LIST_ACK']:
+            self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
+            return message, address[0]
+        else:
+            self.update_status(message)
+            return self._init_device_list(waiting_for_response=True)
 
     def _get_access_token(self) -> str:
         if self._access_token == '':
@@ -225,23 +269,8 @@ class Bridge(_Device):
             self._access_token = access_token.upper()
         return self._access_token
 
-    def _update_status(self, force_update: bool = False) -> None:
-        if force_update:
-            payload = dumps(
-                {
-                    "msgType": MSG_TYPES['WRITE'],
-                    "mac": self._mac,
-                    "deviceType": self._devicetype,
-                    "AccessToken": self._access_token,
-                    "msgID": self.get_timestamp(),
-                    "data": {'operation': 5}
-                }
-            )
-
-            status = self.send_payload(payload)
-            status = status[0]
-        else:
-            status = self._msg_status
+    def set_status(self, status: dict) -> None:
+        self._set_last_msg_status(status)
 
         self._current_state = status['data']['currentState']
         self._number_of_devices = status['data']['numberOfDevices']
@@ -250,14 +279,23 @@ class Bridge(_Device):
         if self._number_of_devices == 0:
             raise UserWarning('No devices were found.')
 
-        self._set_last_update()
-        self._msg_status = status
-
-    def get_status(self, force_update: bool = False) -> dict:
-        if force_update:
-            self._update_status(force_update=True)
-
+    def get_status(self) -> dict:
         return self._msg_status
+
+    def update_status(self) -> None:
+        data = {'operation': STATUS}
+
+        payload = dumps(
+            {
+                "msgType": MSG_TYPES['WRITE'],
+                "mac": self.get_mac(),
+                "deviceType": self.get_devicetype(),
+                "AccessToken": self.get_access_token(),
+                "msgID": self.get_timestamp(),
+                "data": data
+            }
+        )
+        self.send_payload(payload)
 
     def validate_key(self) -> bool:
         try:
@@ -283,7 +321,7 @@ class Bridge(_Device):
     def _get_socket(self) -> socket:
         return self._sock
 
-    def send_payload(self, payload: str) -> (dict, str):
+    def send_payload(self, payload: str) -> None:
         if self._bridge_address == '':
             remote_ip = MULTICAST_GRP
         else:
@@ -292,37 +330,8 @@ class Bridge(_Device):
             self._set_socket_timeout(UDP_TIMEOUT)
             self._get_socket().sendto(payload.encode(), (remote_ip, SEND_PORT))
             self.get_logger().debug(f'{self._mac}: Send to {remote_ip}:{SEND_PORT}: {payload}.')
-
-            data, address = self._get_socket().recvfrom(1024)
-            message = loads(data.decode('utf-8'))
-
-            if message['msgType'] != MSG_TYPES['ALIVE']:
-                self.get_logger().debug(f'{self._mac}: Receive from {address[0]}:{address[1]}: {message}.')
-                return message, address[0]
-            else:
-                self._set_last_msg_status(message)
-                self._update_status()
-                return self.send_payload(payload)
         except Exception:
             raise
-
-    def get_callback_from_bridge(self, timeout: int = 60) -> dict:
-        # noinspection PyBroadException
-        try:
-            self._set_socket_timeout(timeout)
-            msg = self._get_socket().recv(1024)
-        except Exception as e:
-            self._log.warning(e)
-            return {'msgType': 'timeout'}
-        data = loads(msg.decode('utf-8'))
-        self._set_last_msg_callback(data)
-
-        if data['msgType'] == MSG_TYPES['REPORT']:
-            self._set_last_msg_callback(data)
-            return data
-        else:
-            self.get_logger().warning(f"get_callback_from_bridge -> not Report: {data}")
-            return self.get_callback_from_bridge(timeout=timeout)
 
     # noinspection PyTypeChecker
     def load_devices(self) -> None:
@@ -356,8 +365,8 @@ class Bridge(_Device):
         else:
             return True
 
-    def get_devices(self, force_update: bool = str) -> list:
-        if self._devices or not force_update:
+    def get_devices(self) -> list:
+        if self._devices:
             return self._devices
         else:
             self.load_devices()
@@ -379,6 +388,17 @@ class Bridge(_Device):
     def get_firmware(self) -> str:
         return self._firmware
 
+    def update_devices(self, message) -> None:
+        msg_type = message['msgType']
+        mac = message['mac']
+
+        print(msg_type, mac, message)
+        if mac == self._mac:
+            self.set_status(message)
+        elif self.check_if_device_exist(mac):
+            device = self.get_device_by_mac(mac)
+            device.set_status(message)
+
 
 class RadioMotor(_Device):
     def __init__(self, mac: str, siro_bridge: Bridge, logger: Logger = None) -> None:
@@ -396,9 +416,9 @@ class RadioMotor(_Device):
         self._state_move = 0
 
     def init(self) -> None:
-        self.update_status(force_update=True)
+        self.update_status()
 
-    def _set_device(self, action: int, position: int = 0) -> dict:
+    def _set_device(self, action: int, position: int = 0) -> None:
         if action == POSITION:
             data = {'targetPosition': position}
         else:
@@ -414,22 +434,10 @@ class RadioMotor(_Device):
                 "data": data
             }
         )
-        msg = self._bridge.send_payload(payload)
-        self._set_last_msg_status(msg[0])
-        self.update_status()
-        return msg[0]
+        self._bridge.send_payload(payload)
 
-    def _callback_after_stop(self, timeout: int = 30) -> dict:
-        msg = self._bridge.get_callback_from_bridge(timeout=timeout)
-        self._set_last_msg_status(msg)
-        self.update_status()
-        return msg
-
-    def update_status(self, force_update: bool = False) -> None:
-        if force_update:
-            status = self.get_status(force_update=True)
-        else:
-            status = self._msg_status
+    def set_status(self, status) -> None:
+        self._set_last_msg_status(status)
         try:
             self._type = status['data']['type']
             self._operation = status['data']['operation']
@@ -444,81 +452,28 @@ class RadioMotor(_Device):
         except Exception:
             raise
 
-    def move_down(self) -> dict:
-        msg = self._set_device(DOWN)
-        if msg['data']['currentPosition'] == STATE_DOWN:
-            self._state_move = CURRENT_STATE['State']['CLOSED']
-        else:
-            self._state_move = CURRENT_STATE['State']['CLOSING']
-            msg = self._callback_after_stop()
-            self._state_move = CURRENT_STATE['State']['CLOSED']
-        return msg
+    def update_status(self) -> None:
+        self._set_device(STATUS)
 
-    def move_up(self) -> dict:
-        msg = self._set_device(UP)
-        if msg['data']['currentPosition'] == STATE_UP:
-            self._state_move = CURRENT_STATE['State']['OPEN']
-        else:
-            self._state_move = CURRENT_STATE['State']['OPENING']
-            msg = self._callback_after_stop()
-            self._state_move = CURRENT_STATE['State']['OPEN']
-        return msg
+    def move_down(self) -> None:
+        self._set_device(DOWN)
 
-    def move_stop(self) -> dict:
-        msg_1 = self._set_device(STOP)
-        msg_2 = self._callback_after_stop(timeout=1)
+    def move_up(self) -> None:
+        self._set_device(UP)
 
-        # noinspection PyBroadException
-        try:
-            if msg_2['msgType'] == 'Report':
-                msg = msg_2
-            else:
-                msg = msg_1
-        except Exception:
-            msg = msg_1
+    def move_stop(self) -> None:
+        self._set_device(STOP)
 
-        if self._current_position == UP:
-            self._state_move = CURRENT_STATE['State']['OPEN']
-        elif self._current_position == DOWN:
-            self._state_move = CURRENT_STATE['State']['CLOSED']
-        else:
-            self._state_move = CURRENT_STATE['State']['STOP']
-        return msg
+    def move_to_position(self, position: int) -> None:
+        self._set_device(POSITION, position)
 
-    def move_to_position(self, position: int) -> dict:
-        msg = self._set_device(POSITION, position)
-        old_position = msg['data']['currentPosition']
-        if old_position < position:
-            self._state_move = CURRENT_STATE['State']['CLOSING']
-        else:
-            self._state_move = CURRENT_STATE['State']['OPENING']
-
-        msg = self._callback_after_stop()
-
-        return msg
-
-    def get_status(self, force_update: bool = False) -> dict:
-        if force_update:
-            payload = dumps(
-                {
-                    'msgType': MSG_TYPES['READ'],
-                    "mac": self.get_mac(),
-                    "deviceType": self.get_devicetype(),
-                    'msgID': self.get_timestamp(),
-                }
-            )
-            msg = self._bridge.send_payload(payload)
-            self._set_last_msg_status(msg[0])
-            self.update_status()
-
+    def get_status(self) -> dict:
         return self._msg_status
 
     def get_firmware(self) -> str:
         return self._bridge.get_firmware()
 
-    def get_position(self, force_update: bool = False) -> int:
-        if force_update:
-            self.update_status(force_update=True)
+    def get_position(self) -> int:
         return self._current_position
 
     def get_bridge(self) -> Bridge:
@@ -551,63 +506,69 @@ class Helper(object):
     def get_device_name(device: _Device):
         return device.get_name()
 
-    def start_cli(self, key: str, bridge_address: str = '') -> None:
+    async def start_cli(self, key: str, loop, bridge_address: str = '') -> None:
         bridge = self.bridge_factory(
             key=key,
             bridge_address=bridge_address,
         )
+        listen = asyncio.create_task(bridge.listen(loop))
+        cli = asyncio.create_task(self._cli(loop, bridge))
+        await listen
+        await cli
+
+    async def _cli(self, loop, bridge: Bridge) -> None:
         devices: list = bridge.get_devices()
+        print("List of available devices: ")
+        devices.sort(key=self.get_device_name)
+        for device in devices:
+            index = devices.index(device) + 1
+            name = f"{device.get_name()} " \
+                   f"(mac: {device.get_mac()}, " \
+                   f"type: {DEVICE_TYPES[device.get_devicetype()]})"
+            print(f"  {index}: {name}")
+        print(f"--------------------------------------------------------------------\n"
+              f"  0: for exit")
+        device_selection = int(input(f"Which device do you want to control (1-{len(devices)}): ")) - 1
+        if device_selection == -1:
+            loop.stop()
+            exit()
 
-        keep_running = True
-        while keep_running:
-            print("List of available devices: ")
-            devices.sort(key=self.get_device_name)
-            for device in devices:
-                index = devices.index(device) + 1
-                name = f"{device.get_name()} " \
-                       f"(mac: {device.get_mac()}, " \
-                       f"type: {DEVICE_TYPES[device.get_devicetype()]})"
-                print(f"  {index}: {name}")
-            print(f"--------------------------------------------------------------------\n"
-                  f"  0: for exit")
-            device_selection = int(input(f"Which device do you want to control (1-{len(devices)}): ")) - 1
-            if device_selection == -1:
-                keep_running = False
-                exit()
+        selected_device: RadioMotor = devices[device_selection]
+        print("List of possible operations: \n"
+              "  1: up\n"
+              "  2: down\n"
+              "  3: set position\n"
+              "  4: get position\n"
+              "  5: get status\n"
+              "  9: set name\n"
+              "  0: cancel")
+        operation = int(input("What do you want to do? (0-5,9): "))
 
-            selected_device: RadioMotor = devices[device_selection]
-            print("List of possible operations: \n"
-                  "  1: up\n"
-                  "  2: down\n"
-                  "  3: set position\n"
-                  "  4: get position\n"
-                  "  5: get status\n"
-                  "  9: set name\n"
-                  "  0: cancel")
-            operation = int(input("What do you want to do? (0-5,9): "))
+        if operation == 1:
+            print(selected_device.move_up())
+        elif operation == 2:
+            print(selected_device.move_down())
+        elif operation == 3:
+            value = int(input("Which position should the roller blind move to? (0-100): "))
+            print(selected_device.move_to_position(value))
+        elif operation == 4:
+            print(selected_device.get_status())
+        elif operation == 5:
+            print(selected_device.get_status())
+        elif operation == 9:
+            name = input("Please indicate the name: ")
+            selected_device.set_name(name)
+            print(f"The name was changed to {selected_device.get_name()}.")
+        else:
+            loop.stop()
 
-            if operation == 1:
-                print(selected_device.move_up())
-            elif operation == 2:
-                print(selected_device.move_down())
-            elif operation == 3:
-                value = int(input("Which position should the roller blind move to? (0-100): "))
-                print(selected_device.move_to_position(value))
-            elif operation == 4:
-                print(selected_device.get_status())
-            elif operation == 9:
-                name = input("Please indicate the name: ")
-                selected_device.set_name(name)
-                print(f"The name was changed to {selected_device.get_name()}.")
-            else:
-                keep_running = False
-
-            if keep_running:
-                exit_run = input("Continue? (y,N): ")
-                if exit_run != 'y' or exit_run != 'y':
-                    keep_running = False
-                else:
-                    print("--------------------------------------------------------------------------")
+        exit_run = input("Continue? (y,N): ")
+        if exit_run != 'y' or exit_run != 'y':
+            loop.stop()
+        else:
+            cli = asyncio.create_task(self._cli(loop, bridge))
+            await cli
+            print("--------------------------------------------------------------------------")
 
 
 class _AESElectronicCodeBook(object):
@@ -1002,3 +963,23 @@ class _AESElectronicCodeBook(object):
             result.append((self.S[t[(i + s3) % 4] & 0xFF] ^ tt) & 0xFF)
 
         return self._bytes_to_string(result)
+
+
+class SiroUDPProtocol(asyncio.DatagramProtocol):
+    def __init__(self):
+        self._transport = None
+        self._bridge = None
+
+    def set_bridge(self, bridge: Bridge) -> None:
+        self._bridge = bridge
+
+    def connection_made(self, transport) -> None:
+        self._transport = transport
+
+    def connection_lost(self, exc) -> None:
+        # self._bridge.get_logger().debug('Connection Lost')
+        print('Connection Lost')
+
+    def datagram_received(self, data, addr) -> None:
+        message = loads(data.decode('utf-8'))
+        self._bridge.update_devices(message)

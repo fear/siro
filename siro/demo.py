@@ -1,4 +1,5 @@
 import json
+import asyncio
 
 from siro import (
     RadioMotor,
@@ -8,28 +9,30 @@ from siro import (
 
 
 # noinspection PyShadowingNames
-def cli_demo(key_, addr_="") -> None:
-    Helper().start_cli(key_, addr_)
-
-
-# noinspection PyShadowingNames
-def class_usage_demo(key_) -> None:
+async def class_usage_demo(key_, loop) -> None:
     bridge: Bridge = Helper.bridge_factory(key_)
+    listen = asyncio.create_task(bridge.listen(loop))
 
+    await listen
     devices: list = bridge.get_devices()
+
     device: RadioMotor = devices[0]
-
+    print(device.get_status())
     device.move_up()
+    await asyncio.sleep(2)
+    print(device.get_status())
+    await asyncio.sleep(2)
     device.move_down()
-    device.move_to_position(40)
-    device.move_to_position(35)
+    await asyncio.sleep(1)
+    # device.move_to_position(40)
+    # device.move_to_position(35)
+    # print(device.get_status())
     device.move_stop()
-    device.get_status()
-
 
 if __name__ == '__main__':
     config_ = json.load(open('config.json'))
     key_ = config_['key']
 
-    cli_demo(key_)
-    # class_usage_demo(key_)
+    loop = asyncio.get_event_loop()
+    loop.create_task(class_usage_demo(key_, loop))
+    loop.run_forever()
