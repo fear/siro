@@ -1,7 +1,6 @@
 from siro.siro import (
     RadioMotor,
-    Device,
-    Connector,
+    Helper,
     Bridge,
 )
 from siro.const import (
