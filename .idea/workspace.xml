@@ -25,11 +25,15 @@
     </select>
   </component>
   <component name="ChangeListManager">
+<<<<<<< Updated upstream
     <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="some socket tuning for linux os">
       <change afterPath="$PROJECT_DIR$/test/async_demo.py" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/test/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
+=======
+    <list default="true" id="d58e536b-c94b-478f-a4ab-838b8c785504" name="Default Changelist" comment="implemented AES Class, for plain PythonCode..." />
+>>>>>>> Stashed changes
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -265,6 +269,10 @@
       <workItem from="1601458403099" duration="5270000" />
       <workItem from="1601545507110" duration="16427000" />
       <workItem from="1601641251109" duration="4715000" />
+<<<<<<< Updated upstream
+=======
+      <workItem from="1602055969669" duration="5751000" />
+>>>>>>> Stashed changes
     </task>
     <task id="LOCAL-00001" summary="replace pycrypto with pacryptodome">
       <created>1601035169440</created>
@@ -385,7 +393,25 @@
       <option name="project" value="LOCAL" />
       <updated>1601564650793</updated>
     </task>
+<<<<<<< Updated upstream
     <option name="localTasksCounter" value="18" />
+=======
+    <task id="LOCAL-00018" summary="implemented AES Class, for plain PythonCode...">
+      <created>1602060219523</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1602060219523</updated>
+    </task>
+    <task id="LOCAL-00019" summary="implemented AES Class, for plain PythonCode...">
+      <created>1602061140187</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1602061140187</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
+>>>>>>> Stashed changes
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -506,10 +532,18 @@
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601026784982" />
     <state x="2061" y="348" key="SettingsEditor/0.0.5120.1400/5120.0.1536.824@0.0.5120.1400" timestamp="1601299165507" />
     <state x="2022" y="369" key="SettingsEditor/0.0.5120.1400@0.0.5120.1400" timestamp="1601557396674" />
+<<<<<<< Updated upstream
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1601564653334">
       <screen x="0" y="0" width="5120" height="1400" />
     </state>
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601071557076" />
+=======
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2" timestamp="1602061143015">
+      <screen x="0" y="0" width="5120" height="1400" />
+    </state>
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1280.680@0.0.5120.1400" timestamp="1601071557076" />
+    <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400/5120.0.1463.783@0.0.5120.1400" timestamp="1602061143015" />
+>>>>>>> Stashed changes
     <state x="2152" y="436" key="Vcs.Push.Dialog.v2/0.0.5120.1400@0.0.5120.1400" timestamp="1601564653334" />
     <state width="1287" height="700" key="XDebugger.FullValuePopup" timestamp="1601283654149">
       <screen x="0" y="0" width="5120" height="1400" />
