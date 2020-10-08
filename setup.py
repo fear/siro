@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'siro',
   packages = ['siro'],
-  version = '0.2',
+  version = '0.3',
   license='MIT',
   description = 'This is a package for controlling the SIRO SmartHome Devices like rollers.',
   author = 'Felix Arnold',
   author_email = 'moin@felix-arnold.dev',      # Type in your E-Mail
   url = 'https://github.com/fear/siro',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/fear/siro/archive/0.2.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/fear/siro/archive/0.3.tar.gz',    # I explain this later on
   keywords = ['SmartHome', 'Siro', 'roller', 'home assistant'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'asyncio',
