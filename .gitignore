@@ -130,4 +130,5 @@ dmypy.json
 # Config
 config.json
 demo.py
+names.json
 .idea/*
