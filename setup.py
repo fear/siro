@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'siro',
   packages = ['siro'],
-  version = '0.1',
+  version = '0.2',
   license='MIT',
   description = 'This is a package for controlling the SIRO SmartHome Devices like rollers.',
   author = 'Felix Arnold',
