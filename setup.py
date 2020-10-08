@@ -8,7 +8,7 @@ setup(
   author = 'Felix Arnold',
   author_email = 'moin@felix-arnold.dev',      # Type in your E-Mail
   url = 'https://github.com/fear/siro',   # Provide either the link to your github or to your website
-  download_url = 'https://github.com/fear/siro/archive/v_01.tar.gz',    # I explain this later on
+  download_url = 'https://github.com/fear/siro/archive/0.1.tar.gz',    # I explain this later on
   keywords = ['SmartHome', 'Siro', 'roller', 'home assistant'],   # Keywords that define your package best
   install_requires=[            # I get to this in a second
           'asyncio',
