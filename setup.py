@@ -16,7 +16,8 @@ setup(
   classifiers=[
     'Development Status :: 4 - Beta',      # "3 - Alpha", "4 - Beta" or "5 - Production/Stable"
     'Intended Audience :: Developers',
-    'Topic :: Software Development :: Build Tools',
+    'Topic :: Utilities',
+    'Topic :: Home Automation',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3',      #Specify which pyhton versions that you want to support
     'Programming Language :: Python :: 3.7',
