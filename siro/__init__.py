@@ -22,7 +22,7 @@
 
 from siro.siro import (
     Bridge,
-    Helper,
+    Driver,
     RadioMotor,
 )
 from siro.const import (
