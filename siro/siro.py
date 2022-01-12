@@ -35,7 +35,7 @@ from json import (
     decoder,
     dumps,
 )
-from .const import (
+from const import (
     CALLBACK_PORT,
     CONFIGFILE_DEVICE_NAMES,
     CURRENT_STATE,
