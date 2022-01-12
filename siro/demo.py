@@ -1,3 +1,5 @@
+#!python3
+
 import json
 
 from siro import (
