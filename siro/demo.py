@@ -16,7 +16,7 @@ async def class_usage_demo(key_, loop) -> None:
     await listen
     devices: list = bridge.get_devices()
 
-    device: RadioMotor = devices[0]
+    device: RadioMotor = devices[1]
     device.move_up()
     await asyncio.sleep(2)
     print(device.get_status())
@@ -30,5 +30,5 @@ if __name__ == '__main__':
     key_ = config_['key']
 
     loop = asyncio.get_event_loop()
-    loop.create_task(class_usage_demo(key_, loop))
-    loop.run_forever()
+    #loop.create_task(class_usage_demo(key_, loop))
+    loop.run_until_complete(loop.create_task(class_usage_demo(key_, loop)))
