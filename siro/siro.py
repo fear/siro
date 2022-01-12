@@ -3,7 +3,7 @@ import json
 from abc import (
     ABC
 )
-from .const import (
+from const import (
     CALLBACK_PORT,
     CONFIGFILE_DEVICE_NAMES,
     CURRENT_STATE,
@@ -576,10 +576,9 @@ class Connector:
                   "  2: down\n"
                   "  3: set position\n"
                   "  4: get position\n"
-                  "  5: get status\n"
                   "  9: set name\n"
                   "  0: cancel")
-            operation = int(input("What do you want to do? (0-5,9): "))
+            operation = int(input("What do you want to do? (0-4,9): "))
 
             if operation == 1:
                 print(selected_device.move_up())
