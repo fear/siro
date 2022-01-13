@@ -18,7 +18,7 @@ async def class_usage_demo(key_, loop) -> None:
     await listen
 
     device = bridge.get_device_by_mac('98f4ab8932a40008')
-    print('Warte 3 Sekunden')
+    print('Warte 2 Sekunden')
     await asyncio.sleep(2)
 
     print('Move Down...')
@@ -33,14 +33,14 @@ async def class_usage_demo(key_, loop) -> None:
     print('Move Down...')
     device.move_up()
 
-    print('Warte 5 Sekunden')
-    await asyncio.sleep(5)
+    print('Warte 2 Sekunden')
+    await asyncio.sleep(2)
 
     print('Stop...')
     device.move_stop()
 
-    print('Warte 5 Sekunden')
-    await asyncio.sleep(5)
+    print('Warte 1 Sekunden')
+    await asyncio.sleep(1)
 
     print('Fahre auf position 10% geschlossen')
     device.move_to_position(10)
