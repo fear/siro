@@ -16,16 +16,34 @@ async def class_usage_demo(key_, loop) -> None:
     listen = asyncio.create_task(bridge.listen(loop))
 
     await listen
-    devices: list = bridge.get_devices()
 
-    device: RadioMotor = devices[0]
-    print(device.move_up())
+    device = bridge.get_device_by_mac('98f4ab8932a40008')
+    print('Warte 3 Sekunden')
     await asyncio.sleep(2)
+
+    print('Move Down...')
+    device.move_down()
+
+    print('Statusabfrage:')
     print(device.get_status())
-    await asyncio.sleep(2)
-    print(device.move_down())
-    await asyncio.sleep(1)
-    print(device.move_stop())
+
+    print('Warte 5 Sekunden')
+    await asyncio.sleep(5)
+
+    print('Move Down...')
+    device.move_up()
+
+    print('Warte 5 Sekunden')
+    await asyncio.sleep(5)
+
+    print('Stop...')
+    device.move_stop()
+
+    print('Warte 5 Sekunden')
+    await asyncio.sleep(5)
+
+    print('Fahre auf position 10% geschlossen')
+    device.move_to_position(10)
 
 if __name__ == '__main__':
     config_ = json.load(open('config.json'))
@@ -36,3 +54,4 @@ if __name__ == '__main__':
         class_usage_demo(key_, loop)
     )
     loop.run_until_complete(future)
+
