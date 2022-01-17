@@ -41,7 +41,7 @@ async def class_usage_demo(key_, loop) -> None:
     print('Warte 1 Sekunden')
     await asyncio.sleep(1)
 
-    print('Fahre auf position 50%')
+    print('Fahre auf position 20%')
     device.move_to_position(20)
 
 
