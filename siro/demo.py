@@ -42,7 +42,7 @@ async def class_usage_demo(key_, loop) -> None:
     await asyncio.sleep(1)
 
     print('Fahre auf position 50%')
-    device.move_to_position(50)
+    device.move_to_position(20)
 
 
 if __name__ == '__main__':
